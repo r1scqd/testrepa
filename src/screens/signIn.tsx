@@ -1,25 +1,83 @@
-import { StyleSheet, Text, View } from "react-native";
-import { useEffect } from "react";
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
 import { useAppDispatch } from "../store";
-import { signIn } from "../store/profile.ts";
+import { signIn } from "../services/profile/auth.ts";
+import { signIn as signInAction } from "../store/profile.ts";
+import { setAxiosAuthToken } from "../services";
 
 const SignInScreen = () => {
-  const dispatch = useAppDispatch()
-  useEffect(() => {
-    setTimeout(() => {
-      dispatch(signIn("tokenPayload"))
-    }, 10_000);
-  }, []);
+  const dispatch = useAppDispatch();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const auth = () => {
+    signIn({ username, password }).then(({ data }) => {
+      dispatch(signInAction(data.token));
+      setAxiosAuthToken(data.token);
+    }).catch((r) => {
+      console.log(r);
+      setErrorMessage("Неверный логин или пароль");
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 5000);
+    });
+  };
 
   return (<View style={styles.container}>
-    <Text>SignIn screen</Text>
+    {errorMessage && <Text>{errorMessage}</Text>}
+    <View style={styles.inputView}>
+      <TextInput
+        style={styles.TextInput}
+        placeholder="Username."
+        placeholderTextColor="#003f5c"
+        onChangeText={setUsername}
+      />
+    </View>
+    <View style={styles.inputView}>
+      <TextInput
+        style={styles.TextInput}
+        placeholder="Password."
+        placeholderTextColor="#003f5c"
+        secureTextEntry={true}
+        onChangeText={setPassword}
+      />
+    </View>
+    <TouchableOpacity style={styles.loginBtn} onPress={auth}>
+      <Text style={styles.loginText}>Sign In</Text>
+    </TouchableOpacity>
   </View>);
 };
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  inputView: {
+    backgroundColor: "#39ed5d",
+    borderRadius: 30,
+    width: "70%",
+    height: 45,
+    marginBottom: 20
+  },
+  TextInput: {
+    height: 50,
+    flex: 1,
+    padding: 10,
+    marginLeft: 20
+  },
+  loginBtn: {
+    width: "80%",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
     justifyContent: "center",
-    alignItems: "center"
+    marginTop: 40,
+    backgroundColor: "green"
+  },
+  loginText: {
+    fontSize: 20
   }
 });
 

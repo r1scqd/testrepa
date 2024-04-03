@@ -16,12 +16,15 @@ const Navigation = () => {
             component={SignInScreen}
             options={{
               title: "Sign in",
+              animationTypeForReplace: isAuth ? "pop" : "push"
             }}
           />
         ) : (
           <Stack.Screen
             name={"Home"}
             component={HomeScreen}
+            options={{
+            }}
           />
         )}
       </Stack.Navigator>

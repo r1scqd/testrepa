@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { storage, useAppSelector } from "./index.ts";
 import { useEffect } from "react";
+import { setAxiosAuthToken } from "../services";
 
 enum ProfileRoles {
   STUDENT, TEACHER
@@ -52,7 +53,6 @@ export const profileSlice = createSlice({
     signIn: (state, action: PayloadAction<string>) => {
       state.authToken = action.payload;
       state.isAuth = true;
-      console.log(`sign in with token ${state.authToken}`);
     },
     signOut: () => initialState
   },
