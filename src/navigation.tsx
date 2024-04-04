@@ -3,14 +3,20 @@ import SignInScreen from "./screens/signIn.tsx";
 import HomeScreen from "./screens/home.tsx";
 import { useAppSelector } from "./store";
 import { createStackNavigator } from "@react-navigation/stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { ProfileRoles } from "./store/profile.ts";
+import SubjectsScreen from "./screens/teacher/subjects.tsx";
+import StudentsScreen from "./screens/teacher/students.tsx";
+import MarksScreen from "./screens/teacher/marks.tsx";
 
 const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 const Navigation = () => {
-  const { isAuth } = useAppSelector(state => state.profile);
+  const { isAuth, authToken, role } = useAppSelector(state => state.profile);
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        {!isAuth ? (
+      {!authToken ? (
+        <Stack.Navigator>
           <Stack.Screen
             name={"SignIn"}
             component={SignInScreen}
@@ -19,15 +25,35 @@ const Navigation = () => {
               animationTypeForReplace: isAuth ? "pop" : "push"
             }}
           />
-        ) : (
-          <Stack.Screen
-            name={"Home"}
-            component={HomeScreen}
-            options={{
-            }}
-          />
-        )}
-      </Stack.Navigator>
+        </Stack.Navigator>
+      ) : (
+        <Tab.Navigator>
+          {role == ProfileRoles.TEACHER && (
+            <>
+              <Tab.Screen
+                name={"Subjects"}
+                component={SubjectsScreen}
+              />
+              <Tab.Screen
+                name={"Students"}
+                component={StudentsScreen}
+              />
+              <Tab.Screen
+                name={"Marks"}
+                component={MarksScreen}
+              />
+            </>
+          )}
+          {role == ProfileRoles.STUDENT && (
+            <>
+              <Tab.Screen
+                name={"Home"}
+                component={HomeScreen}
+              />
+            </>
+          )}
+        </Tab.Navigator>
+      )}
     </NavigationContainer>
   );
 };

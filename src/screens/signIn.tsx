@@ -1,9 +1,8 @@
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useAppDispatch } from "../store";
 import { signIn } from "../services/profile/auth.ts";
 import { signIn as signInAction } from "../store/profile.ts";
-import { setAxiosAuthToken } from "../services";
 
 const SignInScreen = () => {
   const dispatch = useAppDispatch();
@@ -13,7 +12,6 @@ const SignInScreen = () => {
   const auth = () => {
     signIn({ username, password }).then(({ data }) => {
       dispatch(signInAction(data.token));
-      setAxiosAuthToken(data.token);
     }).catch((r) => {
       console.log(r);
       setErrorMessage("Неверный логин или пароль");

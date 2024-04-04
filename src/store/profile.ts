@@ -3,7 +3,7 @@ import { storage, useAppSelector } from "./index.ts";
 import { useEffect } from "react";
 import { setAxiosAuthToken } from "../services";
 
-enum ProfileRoles {
+export enum ProfileRoles {
   STUDENT, TEACHER
 }
 
@@ -15,7 +15,7 @@ export interface ProfileData {
 
 
 const initialState: ProfileState = {
-  authToken: null, isAuth: false, lastname: "", name: "", role: ProfileRoles.STUDENT
+  authToken: null, isAuth: false, lastname: "", name: "", role: ProfileRoles.TEACHER
 };
 
 export interface ProfileState extends ProfileData {
@@ -40,8 +40,11 @@ export const restoreProfileState = createAsyncThunk("profile/restore", async () 
 export const useStoreProfileState = () => {
   const state = useAppSelector(state => state.profile);
   useEffect(() => {
-    if (state.authToken) {
-      storage.setString("authToken", state.authToken);
+    if (state.isAuth) {
+      console.log(`save token: ${state.authToken}`);
+      storage.setString("authToken", state.authToken!!);
+    } else {
+      storage.removeItem("authToken");
     }
   }, [state.authToken]);
 };
@@ -53,14 +56,21 @@ export const profileSlice = createSlice({
     signIn: (state, action: PayloadAction<string>) => {
       state.authToken = action.payload;
       state.isAuth = true;
+      setAxiosAuthToken(state.authToken);
     },
-    signOut: () => initialState
+    signOut: () => {
+      setAxiosAuthToken(null);
+      return initialState;
+    }
   },
   extraReducers: builder => {
     builder.addCase(restoreProfileState.fulfilled, (state, { payload }) => {
       if (payload.authToken) {
         state.authToken = payload.authToken;
         state.isAuth = true;
+        setAxiosAuthToken(state.authToken);
+      } else {
+        state.isAuth = false;
       }
       console.log("restore profile state");
     });

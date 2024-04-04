@@ -5,36 +5,32 @@
  * @format
  */
 import { Provider } from "react-redux";
-import { storage, store, useAppDispatch, useAppSelector } from "./src/store";
+import { store, useAppDispatch, useAppSelector } from "./src/store";
 import Navigation from "./src/navigation.tsx";
 import React, { ReactNode, useEffect, useState } from "react";
 import SplashScreen from "./src/screens/splash.tsx";
 import { restoreProfileState, signOut, useStoreProfileState } from "./src/store/profile.ts";
 import { setOnTokenExpired } from "./src/services";
+import { signInCheck } from "./src/services/profile/auth.ts";
 
 interface StoreFillerProps {
   children: ReactNode,
   loading: ReactNode
 }
 
-function StorageGate({ children, loading }: StoreFillerProps) {
+function AppInitializerGate({ children, loading }: StoreFillerProps) {
   const dispatch = useAppDispatch();
-  const profileState = useAppSelector(state => state.profile);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
-    Promise.all([
-      dispatch(restoreProfileState()),
-      new Promise((resolve) => {
-        setTimeout(resolve, 2000);
-      })
-    ]).finally(() => {
-      setIsLoading(false);
-      setOnTokenExpired(() => {
-        if (profileState.isAuth) {
+    dispatch(restoreProfileState())
+      .finally(() => {
+        console.log("store initialized");
+        setOnTokenExpired(() => {
           dispatch(signOut());
-        }
+        });
+        signInCheck().then(r => !r && dispatch(signOut()));
+        setIsLoading(false);
       });
-    });
   }, []);
   const StorageSaveWrapper = () => {
     useStoreProfileState();
@@ -46,9 +42,9 @@ function StorageGate({ children, loading }: StoreFillerProps) {
 function App() {
   return (
     <Provider store={store}>
-      <StorageGate loading={<SplashScreen />}>
+      <AppInitializerGate loading={<SplashScreen />}>
         <Navigation />
-      </StorageGate>
+      </AppInitializerGate>
     </Provider>
   );
 }

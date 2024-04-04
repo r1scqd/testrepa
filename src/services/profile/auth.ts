@@ -14,3 +14,18 @@ export async function signIn({ username, password }: AuthRequest) {
   headers[authNeedItHeader] = AuthNeedIt.NO;
   return await axiosInstance.post<AuthResponse>("/login", { username, password }, { headers });
 }
+
+
+export async function signInCheck() {
+  return await axiosInstance.get("login/check")
+    .then(r => {
+      console.log(r);
+
+
+      return true;
+    })
+    .catch(reason => {
+      console.log(reason);
+      return false;
+    });
+}
