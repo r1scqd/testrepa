@@ -1,21 +1,22 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { storage, useAppSelector } from "./index.ts";
-import { useEffect } from "react";
+import { storage } from "./index.ts";
 import { setAxiosAuthToken } from "../services";
+import { UsersResponse } from "../services/users.ts";
 
 export enum ProfileRoles {
-  STUDENT, TEACHER
+  STUDENT = "student", TEACHER = "teacher"
 }
 
 export interface ProfileData {
-  role: ProfileRoles;
+  role: Undefinable<ProfileRoles>;
   name: string;
   lastname: string;
+  username: string;
 }
 
 
 const initialState: ProfileState = {
-  authToken: null, isAuth: false, lastname: "", name: "", role: ProfileRoles.TEACHER
+  authToken: null, isAuth: false, lastname: "", name: "", role: undefined, username: ""
 };
 
 export interface ProfileState extends ProfileData {
@@ -29,26 +30,12 @@ interface ProfilePersist {
 
 
 export const restoreProfileState = createAsyncThunk("profile/restore", async () => {
-  const token = await storage.getStringAsync("authToken");
+  const token = await storage.getStringAsync("profile.authToken");
   const r: ProfilePersist = {
     authToken: token || null
   };
   return r;
 });
-
-
-export const useStoreProfileState = () => {
-  const state = useAppSelector(state => state.profile);
-  useEffect(() => {
-    if (state.isAuth) {
-      console.log(`save token: ${state.authToken}`);
-      storage.setString("authToken", state.authToken!!);
-    } else {
-      storage.removeItem("authToken");
-    }
-  }, [state.authToken]);
-};
-
 export const profileSlice = createSlice({
   name: "profile",
   initialState,
@@ -57,10 +44,26 @@ export const profileSlice = createSlice({
       state.authToken = action.payload;
       state.isAuth = true;
       setAxiosAuthToken(state.authToken);
+      storage.setString("profile.authToken", state.authToken);
     },
     signOut: () => {
       setAxiosAuthToken(null);
+      storage.removeItem("profile.authToken");
       return initialState;
+    },
+    fillProfile: (state, action: PayloadAction<UsersResponse>) => {
+      console.log(`profile fill data with ${action.payload}`);
+      switch (action.payload.role) {
+        case "student":
+          state.role = ProfileRoles.STUDENT;
+          break;
+        case "teacher":
+          state.role = ProfileRoles.TEACHER;
+          break;
+      }
+      state.name = action.payload.name;
+      state.lastname = action.payload.lastname;
+      state.username = action.payload.username;
     }
   },
   extraReducers: builder => {
@@ -77,6 +80,6 @@ export const profileSlice = createSlice({
   }
 });
 
-export const { signIn, signOut } = profileSlice.actions;
+export const { signIn, signOut, fillProfile } = profileSlice.actions;
 
 export default profileSlice.reducer;

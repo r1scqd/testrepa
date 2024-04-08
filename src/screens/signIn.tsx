@@ -1,8 +1,10 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import React, { useState } from "react";
 import { useAppDispatch } from "../store";
 import { signIn } from "../services/profile/auth.ts";
-import { signIn as signInAction } from "../store/profile.ts";
+import { fillProfile, signIn as signInAction } from "../store/profile.ts";
+import { usersMe } from "../services/users.ts";
+import { StyleSheet, View } from "react-native";
+import { Button, Text, TextInput } from "react-native-paper";
 
 const SignInScreen = () => {
   const dispatch = useAppDispatch();
@@ -12,6 +14,10 @@ const SignInScreen = () => {
   const auth = () => {
     signIn({ username, password }).then(({ data }) => {
       dispatch(signInAction(data.token));
+      return usersMe();
+    }).then(({ data }) => {
+      dispatch(fillProfile(data));
+      console.log("fill data");
     }).catch((r) => {
       console.log(r);
       setErrorMessage("Неверный логин или пароль");
@@ -25,54 +31,45 @@ const SignInScreen = () => {
     {errorMessage && <Text>{errorMessage}</Text>}
     <View style={styles.inputView}>
       <TextInput
+        mode={"outlined"}
         style={styles.TextInput}
-        placeholder="Username."
-        placeholderTextColor="#003f5c"
-        onChangeText={setUsername}
+        placeholder="Логин"
+        onChangeText={value => setUsername(value.trim())}
+        value={username}
       />
     </View>
     <View style={styles.inputView}>
       <TextInput
+        mode={"outlined"}
         style={styles.TextInput}
-        placeholder="Password."
-        placeholderTextColor="#003f5c"
+        placeholder="Пароль"
         secureTextEntry={true}
         onChangeText={setPassword}
+        value={password}
       />
     </View>
-    <TouchableOpacity style={styles.loginBtn} onPress={auth}>
-      <Text style={styles.loginText}>Sign In</Text>
-    </TouchableOpacity>
+    <Button style={styles.loginBtn} mode={"elevated"} onPress={auth}>
+      <Text style={styles.loginText}>Войти</Text>
+    </Button>
   </View>);
 };
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    gap: 20
   },
   inputView: {
-    backgroundColor: "#39ed5d",
-    borderRadius: 30,
     width: "70%",
-    height: 45,
-    marginBottom: 20
+    height: 45
   },
   TextInput: {
     height: 50,
-    flex: 1,
-    padding: 10,
-    marginLeft: 20
+    flex: 1
   },
   loginBtn: {
-    width: "80%",
-    borderRadius: 25,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 40,
-    backgroundColor: "green"
+    width: "60%",
   },
   loginText: {
     fontSize: 20

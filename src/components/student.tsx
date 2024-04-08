@@ -1,5 +1,6 @@
 import { StudentBase } from "../services/students";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Text } from "react-native-paper";
 
 export interface StudentComponentProps {
   student: StudentBase;

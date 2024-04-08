@@ -1,4 +1,11 @@
 {
   "name": "frontend",
-  "displayName": "frontend"
+  "displayName": "college test",
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "42223947-ba66-4d4c-99c8-ee01840368d9"
+      }
+    }
+  }
 }

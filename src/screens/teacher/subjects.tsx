@@ -1,10 +1,10 @@
-import { FlatList, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react";
 import { Subject } from "../../services/subjects";
 import SubjectComponent from "../../components/subject.tsx";
 import { getSubjects } from "../../services/subjects/teacher.tsx";
 import SubjectEditComponent from "../../components/subject.edit.tsx";
-import { Button, Modal, PaperProvider, Portal, Provider } from "react-native-paper";
+import { Button, Portal } from "react-native-paper";
 import * as React from "react";
 
 const SubjectsScreen = () => {
@@ -27,9 +27,8 @@ const SubjectsScreen = () => {
   }, []);
 
   return (
-    <PaperProvider>
-      {modalVisible && (
-        <Portal>
+    <>
+      {modalVisible && (<Portal>
           <SubjectEditComponent
             onDismiss={() => {
               setModalVisible(false);
@@ -54,7 +53,7 @@ const SubjectsScreen = () => {
         />
         <Button mode={"text"} onPress={() => setModalVisible(true)}><Text>Добавить предмет</Text></Button>
       </View>
-    </PaperProvider>);
+    </>);
 };
 
 

@@ -1,8 +1,9 @@
 import { Subject } from "../services/subjects";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import moment from "moment";
 import "moment/locale/ru";
-import { useEffect } from "react";
+import React from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Text } from "react-native-paper";
 
 moment.locale("ru");
 

@@ -19,13 +19,9 @@ export async function signIn({ username, password }: AuthRequest) {
 export async function signInCheck() {
   return await axiosInstance.get("login/check")
     .then(r => {
-      console.log(r);
-
-
       return true;
     })
-    .catch(reason => {
-      console.log(reason);
+    .catch(() => {
       return false;
     });
 }
