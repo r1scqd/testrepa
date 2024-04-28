@@ -1,34 +1,29 @@
 import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import SignInScreen from "./screens/signIn.tsx";
-import HomeScreen from "./screens/home.tsx";
 import { useAppSelector } from "./store";
-import { createStackNavigator } from "@react-navigation/stack";
 import { ProfileRoles } from "./store/profile.ts";
 import SubjectsScreen from "./screens/teacher/subjects.tsx";
 import StudentsScreen from "./screens/teacher/students.tsx";
 import MarksScreen from "./screens/teacher/marks.tsx";
 import StudentSubjectsScreen from "./screens/student/subjects.tsx";
 import SignOutScreen from "./screens/signOut.tsx";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createMaterialBottomTabNavigator } from "react-native-paper/react-navigation";
+import SplashScreen from "./screens/splash.tsx";
+import { StyleSheet, View } from "react-native";
+import { Text, useTheme } from "react-native-paper";
 
-const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
+const Tab = createMaterialBottomTabNavigator();
 const Navigation = () => {
-  const { isAuth, authToken, role } = useAppSelector(state => state.profile);
-
+  const theme = useTheme();
+  const { isAuth, role } = useAppSelector(state => state.profile);
   return (
-      <NavigationContainer theme={{dark: false, colors: DefaultTheme.colors}}>
-        {!authToken ? (
-          <Stack.Navigator>
-            <Stack.Screen
-              name={"SignIn"}
-              component={SignInScreen}
-              options={{
-                title: "Вход",
-                animationTypeForReplace: isAuth ? "pop" : "push"
-              }}
-            />
-          </Stack.Navigator>
+    <View style={{ flex: 1 }}>
+      <View style={[{  width: "100%", backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.onSurface, paddingVertical: 10 }, styles.headerView]}>
+        <Text style={{ textAlign: "center", fontSize: 20 }}>Application</Text>
+      </View>
+      <NavigationContainer>
+        {!isAuth ? (
+          <SignInScreen />
         ) : (
           role ? (
             <Tab.Navigator>
@@ -38,7 +33,7 @@ const Navigation = () => {
                     name={"Subjects"}
                     component={SubjectsScreen}
                     options={{
-                      title: "Предметы",
+                      title: "Предметы"
                     }}
                   />
                   <Tab.Screen
@@ -72,11 +67,19 @@ const Navigation = () => {
                 title: "Выход"
               }} />
             </Tab.Navigator>) : (
-            <HomeScreen />
+            <SplashScreen />
           )
         )}
       </NavigationContainer>
+    </View>
   );
 };
+
+
+const styles = StyleSheet.create({
+  headerView: {
+    borderBottomWidth: 1
+  }
+});
 
 export default Navigation;

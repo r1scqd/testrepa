@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { storage } from "./index.ts";
 
-export type ThemeType = "dark" | "white" | "system"
+export type ThemeType = "dark" | "light" | "system"
 
 export interface ThemeState {
   theme: ThemeType;

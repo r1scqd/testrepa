@@ -4,9 +4,10 @@ import { signIn } from "../services/profile/auth.ts";
 import { fillProfile, signIn as signInAction } from "../store/profile.ts";
 import { usersMe } from "../services/users.ts";
 import { StyleSheet, View } from "react-native";
-import { Button, Text, TextInput } from "react-native-paper";
+import { Button, Text, TextInput, useTheme } from "react-native-paper";
 
 const SignInScreen = () => {
+  const theme = useTheme()
   const dispatch = useAppDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -27,7 +28,7 @@ const SignInScreen = () => {
     });
   };
 
-  return (<View style={styles.container}>
+  return (<View style={[styles.container, {backgroundColor: theme.colors.background}]}>
     {errorMessage && <Text>{errorMessage}</Text>}
     <View style={styles.inputView}>
       <TextInput

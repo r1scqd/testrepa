@@ -1,10 +1,11 @@
 import { Subject } from "../services/subjects";
-import { Button, Modal } from "react-native-paper";
+import { Button, Modal, useTheme } from "react-native-paper";
 import { Text, TextInput } from "react-native-paper";
 import { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { StyleSheet, View } from "react-native";
 import { createSubject, deleteSubject, editSubject } from "../services/subjects/teacher.tsx";
+import moment from "moment";
 
 export interface SubjectEditComponentProps {
   onDismiss: () => void;
@@ -13,16 +14,16 @@ export interface SubjectEditComponentProps {
 }
 
 const SubjectEditComponent = ({ visible, onDismiss, subject }: SubjectEditComponentProps) => {
+  const theme = useTheme()
   const [name, setName] = useState(subject?.name || "");
   const [spending, setSpending] = useState(subject?.spending ? new Date(subject.spending) : new Date());
   const [isSelectDate, setIsSelectDate] = useState(false);
-  return (<Modal contentContainerStyle={styles.outlineContainer} visible={visible} onDismiss={onDismiss}
+  return (<Modal contentContainerStyle={[styles.outlineContainer, {backgroundColor: theme.colors.background}]} visible={visible} onDismiss={onDismiss}
                  dismissableBackButton={true}>
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
       <TextInput mode={"outlined"} onChangeText={setName} value={name} />
-
       <View style={styles.dateSelectView}>
-        <Text>Выбранная дата: {spending.toDateString()}</Text>
+        <Text numberOfLines={1} style={[styles.dateTitle, styles.dateSelectText]}>Дата: {moment(spending).format("D MMMM (dddd)")}</Text>
         <Button mode={"outlined"} onPress={() => setIsSelectDate(true)}>
           <Text>Выбрать дату</Text>
         </Button>
@@ -36,12 +37,6 @@ const SubjectEditComponent = ({ visible, onDismiss, subject }: SubjectEditCompon
           }}
         />}
       <View style={styles.buttonsView}>
-
-        <Button mode={"outlined"} onPress={() => {
-          onDismiss();
-        }}>
-          <Text>Отменить</Text>
-        </Button>
         <Button mode={"outlined"} onPress={() => {
           if (subject) {
             editSubject({ id: subject.id, spending: spending.toISOString(), name }).then(r => {
@@ -55,14 +50,14 @@ const SubjectEditComponent = ({ visible, onDismiss, subject }: SubjectEditCompon
             });
           }
         }}>
-          <Text>{subject ? "Сохранить" : "Добавить"}</Text>
+          <Text style={{color: theme.colors.primary}}>{subject ? "Сохранить" : "Добавить"}</Text>
         </Button>
         {subject && (<Button mode={"outlined"} onPress={() => {
           deleteSubject(subject).then(r => {
             console.log(r);
             onDismiss();
           });
-        }}><Text>Удалить</Text></Button>)}
+        }}><Text style={{color: theme.colors.error}}>Удалить</Text></Button>)}
       </View>
     </View>
   </Modal>);
@@ -85,15 +80,20 @@ const styles = StyleSheet.create({
   },
   dateSelectView: {
     display: "flex",
-    flexDirection: "row",
+    flexDirection: "column",
     gap: 10,
-    flexWrap: "wrap"
+  },
+  dateSelectText: {
+    marginHorizontal: 10
+  },
+  dateTitle:{
+    fontSize: 16
   },
   buttonsView: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 5,
+    justifyContent: "flex-start",
+    gap: 10,
     flexWrap: "wrap"
   }
 });

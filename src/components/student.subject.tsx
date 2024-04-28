@@ -1,7 +1,7 @@
 import { SubjectExt } from "../services/subjects/students.ts";
 import moment from "moment/moment";
 import { StyleSheet, View } from "react-native";
-import { Button, Text } from "react-native-paper";
+import { Button, Text, useTheme } from "react-native-paper";
 import { useState } from "react";
 import { setSubjectMark } from "../services/marks/student.ts";
 import { Dropdown } from "react-native-element-dropdown";
@@ -44,6 +44,7 @@ interface DropdownMark {
 
 
 export const SubjectComponent = ({ subject }: SubjectComponentProps) => {
+  const theme = useTheme()
   const date = moment(subject.spending);
   const [mark, setMark] = useState(subject.mark || "");
   const [notifyMessage, setNotifyMessage] = useState("");
@@ -57,6 +58,7 @@ export const SubjectComponent = ({ subject }: SubjectComponentProps) => {
         <Dropdown
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
+          itemContainerStyle={{backgroundColor: theme.colors.background}}
           style={styles.dropdown}
           mode={"default"}
           data={availableMarks}

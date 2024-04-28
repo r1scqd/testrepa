@@ -3,7 +3,7 @@ import moment from "moment";
 import "moment/locale/ru";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { Text } from "react-native-paper";
+import { Text, withTheme } from "react-native-paper";
 
 moment.locale("ru");
 
@@ -35,11 +35,11 @@ const styles = StyleSheet.create({
     gap: 5,
     marginVertical: 5,
     paddingVertical: 5,
-    paddingHorizontal: '5%',
+    paddingHorizontal: "5%",
     justifyContent: "space-between"
   },
   item: {
-    fontSize: 16,
+    fontSize: 16
 
   }
 });
